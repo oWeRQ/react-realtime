@@ -1,41 +1,15 @@
 import io from 'socket.io-client';
 import { useState, useReducer, useEffect } from 'react';
-import { create as createDiffPatcher, patch, clone } from 'jsondiffpatch';
+import socketReducer from '../functions/socketReducer';
+import RDesktop from '../components/RDesktop';
+import RWindow from '../components/RWindow';
 
 let socket;
 
-const diffPatcher = createDiffPatcher({
-  objectHash,
-  textDiff: {
-    minLength: 1,
-  },
-});
-
-function objectHash(obj, index) {
-  return obj.id || '$$index:' + index;
-}
-
-function socketReducer(reducer) {
-  return (state, action) => {
-    const nextState = reducer(state, action);
-
-    if (action?.type !== 'init' && action?.type !== 'delta') {
-      const delta = diffPatcher.diff(state, nextState);
-      socket.emit('delta', delta);
-    }
-
-    return nextState;
-  };
-}
-
 const initialState = {};
 
-const reducer = socketReducer((state, { type, payload }) => {
+const reducer = socketReducer(() => socket, (state, { type, payload }) => {
   switch (type) {
-    case 'init':
-      return { ...state, ...payload };
-    case 'delta':
-      return patch(clone(state), payload);
     case 'addMessage':
       return { ...state, messages: [...(state.messages || []), payload] };
   }
@@ -97,29 +71,34 @@ export default function Home() {
     }
   };
 
+  const [position, setPosition] = useState([100, 100]);
+  const [size, setSize] = useState([300, 300]);
+
   return (
-    <>
-      <ul>
-        {messages.map((msg, i) => (
-          <li key={i}>
-            {msg.author}: {msg.message}
-          </li>
-        ))}
-      </ul>
-      <input
-        size="4"
-        type="text"
-        value={author}
-        onChange={(e) => setAuthor(e.target.value)}
-      />
-      :
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyUp={handleKeypress}
-      />
-      <button onClick={sendMessage}>Send</button>
-    </>
+    <RDesktop>
+      <RWindow position={position} setPosition={setPosition} size={size} setSize={setSize} title="Chat">
+        <ul>
+          {messages.map((msg, i) => (
+            <li key={i}>
+              {msg.author}: {msg.message}
+            </li>
+          ))}
+        </ul>
+        <input
+          size="4"
+          type="text"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+        />
+        :
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyUp={handleKeypress}
+        />
+        <button onClick={sendMessage}>Send</button>
+      </RWindow>
+    </RDesktop>
   );
 }

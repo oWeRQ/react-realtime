@@ -32,6 +32,8 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
       return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
     case 'addWindow':
       return { ...state, windows: [...(state.windows || []), payload] };
+    case 'closeWindow':
+      return { ...state, windows: state.windows.filter(win => win.id !== payload.id) };
     case 'focusWindow':
       return state.windows.at(-1).id === payload.id ? state : { ...state, windows: focusWindow(payload.id, state.windows) };
   }
@@ -124,6 +126,14 @@ export default function Home() {
       },
     });
   }
+  const closeWindow = (id) => {
+    dispatch({
+      type: 'closeWindow',
+      payload: {
+        id,
+      },
+    });
+  }
   const focusWindow = (id) => {
     setActiveId(id);
 
@@ -140,6 +150,7 @@ export default function Home() {
       {windows.map(win =>
         <RWindow
           key={win.id}
+          onClose={() => closeWindow(win.id)}
           onFocus={() => focusWindow(win.id)}
           position={win.position}
           setPosition={value => setPosition(win.id, value)}

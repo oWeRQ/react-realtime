@@ -3,7 +3,7 @@ import clsx from '../functions/clsx';
 import listenPointerMove from '../functions/listenPointerMove';
 import styles from './RWindow.module.css';
 
-export default function RWindow({ onFocus, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
+export default function RWindow({ onClose, onFocus, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
   const [isMove, setIsMove] = useState(false);
   const headerRef = useRef();
   const offsetRef = useRef([0, 0]);
@@ -36,7 +36,7 @@ export default function RWindow({ onFocus, title, position: [left, top], setPosi
     <div onMouseDown={onFocus} className={styles.container} style={{ left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px' }}>
       <div className={clsx({ [styles.header]: true, [styles.move]: isMove })} ref={headerRef} onMouseDown={onStartMove}>
         <div className={styles.title}>{title}</div>
-        <div className={styles.close}>&times;</div>
+        <div className={styles.close} onClick={onClose}>&times;</div>
       </div>
       <div className={styles.content}>
         {children}

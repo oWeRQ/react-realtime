@@ -12,6 +12,10 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
   switch (type) {
     case 'addMessage':
       return { ...state, messages: [...(state.messages || []), payload] };
+    case 'position':
+      return { ...state, position: payload };
+    case 'size':
+      return { ...state, size: payload };
   }
 
   return state;
@@ -71,8 +75,21 @@ export default function Home() {
     }
   };
 
-  const [position, setPosition] = useState([100, 100]);
-  const [size, setSize] = useState([300, 300]);
+  const position = state.position ?? [100, 100];
+  const setPosition = (payload) => {
+    dispatch({
+      type: 'position',
+      payload,
+    });
+  };
+
+  const size = state.size ?? [300, 300];
+  const setSize = (payload) => {
+    dispatch({
+      type: 'size',
+      payload,
+    });
+  };
 
   return (
     <RDesktop>

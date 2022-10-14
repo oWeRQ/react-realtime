@@ -2,6 +2,8 @@ import io from 'socket.io-client';
 import { useState, useReducer, useEffect } from 'react';
 import socketReducer from '../functions/socketReducer';
 import RDesktop from '../components/RDesktop';
+import RTaskBar from '../components/RTaskBar';
+import RButton from '../components/RButton';
 import RWindow from '../components/RWindow';
 
 let socket;
@@ -116,6 +118,12 @@ export default function Home() {
         />
         <button onClick={sendMessage}>Send</button>
       </RWindow>
+      <RTaskBar>
+        <RButton bold>Start</RButton>
+        <RButton bold active>Chat 1</RButton>
+        <RButton bold>Chat 2</RButton>
+        <RButton bold>Chat 3</RButton>
+      </RTaskBar>
     </RDesktop>
   );
 }

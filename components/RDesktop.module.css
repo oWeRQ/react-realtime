@@ -1,5 +1,6 @@
 .container {
   position: absolute;
   inset: 0;
+  font-size: 14px;
   background: #008282;
 }

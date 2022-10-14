@@ -5,6 +5,18 @@ import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
 import RWindow from '../components/RWindow';
+import uniqId from '../functions/uniqId';
+
+function focusWindow(id, windows) {
+  return [...windows].sort((a, b) => {
+    if (a.id === id)
+      return 1;
+    else if (b.id === id)
+      return -1;
+
+    return 0;
+  });
+}
 
 let socket;
 
@@ -15,9 +27,13 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
     case 'addMessage':
       return { ...state, messages: [...(state.messages || []), payload] };
     case 'position':
-      return { ...state, position: payload };
+      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, position: payload.position } : win)) };
     case 'size':
-      return { ...state, size: payload };
+      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
+    case 'addWindow':
+      return { ...state, windows: [...(state.windows || []), payload] };
+    case 'focusWindow':
+      return state.windows.at(-1).id === payload.id ? state : { ...state, windows: focusWindow(payload.id, state.windows) };
   }
 
   return state;
@@ -78,51 +94,93 @@ export default function Home() {
   };
 
   const position = state.position ?? [100, 100];
-  const setPosition = (payload) => {
+  const setPosition = (id, position) => {
     dispatch({
       type: 'position',
-      payload,
+      payload: { id, position },
     });
   };
 
   const size = state.size ?? [300, 300];
-  const setSize = (payload) => {
+  const setSize = (id, size) => {
     dispatch({
       type: 'size',
-      payload,
+      payload: { id, size },
     });
   };
 
+  const [activeId, setActiveId] = useState(0);
+  const windows = state.windows ?? [];
+  const openWindow = () => {
+    const id = uniqId();
+
+    dispatch({
+      type: 'addWindow',
+      payload: {
+        id,
+        title: `Chat ${id}`,
+        position: [100, 100],
+        size: [300, 300],
+      },
+    });
+  }
+  const focusWindow = (id) => {
+    setActiveId(id);
+
+    dispatch({
+      type: 'focusWindow',
+      payload: {
+        id,
+      },
+    });
+  }
+
   return (
     <RDesktop>
-      <RWindow position={position} setPosition={setPosition} size={size} setSize={setSize} title="Chat">
-        <ul>
-          {messages.map((msg, i) => (
-            <li key={i}>
-              {msg.author}: {msg.message}
-            </li>
-          ))}
-        </ul>
-        <input
-          size="4"
-          type="text"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
-        :
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyUp={handleKeypress}
-        />
-        <button onClick={sendMessage}>Send</button>
-      </RWindow>
+      {windows.map(win =>
+        <RWindow
+          key={win.id}
+          onFocus={() => focusWindow(win.id)}
+          position={win.position}
+          setPosition={value => setPosition(win.id, value)}
+          size={win.size}
+          setSize={value => setSize(win.id, value)}
+          title={win.title}
+          active={win.id === activeId}
+        >
+          <ul>
+            {messages.map((msg, i) => (
+              <li key={i}>
+                {msg.author}: {msg.message}
+              </li>
+            ))}
+          </ul>
+          <input
+            size="4"
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+          :
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyUp={handleKeypress}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </RWindow>
+       )}
       <RTaskBar>
-        <RButton bold>Start</RButton>
-        <RButton bold active>Chat 1</RButton>
-        <RButton bold>Chat 2</RButton>
-        <RButton bold>Chat 3</RButton>
+        <RButton bold onClick={openWindow}>Start</RButton>
+        {windows.map(win =>
+          <RButton
+            key={win.id}
+            onClick={() => focusWindow(win.id)}
+            active={win.id === activeId}
+            bold
+          >{win.title}</RButton>
+        )}
       </RTaskBar>
     </RDesktop>
   );

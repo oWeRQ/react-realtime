@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { useState, useReducer, useEffect } from 'react';
+import { useState, useReducer, useEffect, useRef } from 'react';
 import mergeReducers from '../functions/mergeReducers';
 import deltaReducer from '../functions/deltaReducer';
 import windowsReducer from '../functions/windowsReducer';
@@ -7,6 +7,8 @@ import messagesReducer from '../functions/messagesReducer';
 import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
+import RMenu from '../components/RMenu';
+import RMenuItem from '../components/RMenuItem';
 import RWindow from '../components/RWindow';
 import useStorage from '../functions/useStorage';
 import getMax from '../functions/getMax';
@@ -70,24 +72,13 @@ export default function Home() {
     }
   };
 
-  const position = state.position ?? [100, 100];
-  const setPosition = ({ id }, position) => {
-    dispatch({
-      type: 'position',
-      payload: { id, position },
-    });
-  };
-
-  const size = state.size ?? [300, 300];
-  const setSize = ({ id }, size) => {
-    dispatch({
-      type: 'size',
-      payload: { id, size },
-    });
-  };
-
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
+
+  const isActive = (win) => {
+    return win.id === activeWindow?.id;
+  }
+
   const openWindow = () => {
     const id = uniqId();
     const [left, top] = activeWindow?.position || [0, 0];
@@ -102,6 +93,7 @@ export default function Home() {
       },
     });
   }
+
   const closeWindow = ({ id }) => {
     dispatch({
       type: 'closeWindow',
@@ -110,6 +102,7 @@ export default function Home() {
       },
     });
   }
+
   const focusWindow = ({ id }) => {
     dispatch({
       type: 'focusWindow',
@@ -119,8 +112,28 @@ export default function Home() {
     });
   }
 
-  function isActive(win) {
-    return win.id === activeWindow?.id;
+  const setPosition = ({ id }, position) => {
+    dispatch({
+      type: 'position',
+      payload: { id, position },
+    });
+  };
+
+  const setSize = ({ id }, size) => {
+    dispatch({
+      type: 'size',
+      payload: { id, size },
+    });
+  };
+
+  const startRef = useRef();
+  const [start, setStart] = useState(false);
+  const toggleStart = () => {
+    setStart(val => !val);
+  }
+  const startClick = () => {
+    setStart(false);
+    openWindow();
   }
 
   return (
@@ -163,7 +176,10 @@ export default function Home() {
         </RWindow>
        )}
       <RTaskBar>
-        <RButton bold onClick={openWindow}>Start</RButton>
+        {start && <RMenu reference={startRef} placement="top-start">
+          <RMenuItem onClick={startClick}>Chat</RMenuItem>
+        </RMenu>}
+        <RButton ref={startRef} bold active={start} onClick={toggleStart}>Start</RButton>
         {windows.map(win =>
           <RButton
             key={win.id}

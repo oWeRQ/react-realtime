@@ -17,7 +17,6 @@ export default function RWindow({ onClose, onFocus, zIndex, active, title, posit
   }, [setPosition]);
 
   const onStartMove = useCallback((e) => {
-    e.preventDefault();
     offsetRef.current = [e.clientX - left, e.clientY - top];
     listenPointerMove(document, onMove, () => setIsMove(false));
   }, [onMove, left, top]);

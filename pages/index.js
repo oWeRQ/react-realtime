@@ -5,6 +5,7 @@ import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
 import RWindow from '../components/RWindow';
+import useStorage from '../functions/useStorage';
 import uniqId from '../functions/uniqId';
 
 function getMax(arr, mapper = v => v) {
@@ -66,7 +67,7 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
 });
 
 export default function Home() {
-  const [author, setAuthor] = useState('Guest ' + uniqId());
+  const [author, setAuthor] = useStorage('username', 'Guest ' + uniqId());
   const [message, setMessage] = useState('');
   const [state, dispatch] = useReducer(reducer, initialState);
   const messages = state.messages || [];

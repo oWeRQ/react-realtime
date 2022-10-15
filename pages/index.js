@@ -1,70 +1,20 @@
 import io from 'socket.io-client';
 import { useState, useReducer, useEffect } from 'react';
-import socketReducer from '../functions/socketReducer';
+import mergeReducers from '../functions/mergeReducers';
+import deltaReducer from '../functions/deltaReducer';
+import windowsReducer from '../functions/windowsReducer';
+import messagesReducer from '../functions/messagesReducer';
 import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
 import RWindow from '../components/RWindow';
 import useStorage from '../functions/useStorage';
+import getMax from '../functions/getMax';
 import uniqId from '../functions/uniqId';
 
-function getMax(arr, mapper = v => v) {
-  let max = -Infinity;
-  let result = undefined;
-
-  for (let item of arr) {
-    const value = mapper(item);
-    if (max < value) {
-      max = value;
-      result = item;
-    }
-  }
-
-  return result;
-}
-
-function addWindow(windows, win) {
-  const zIndex = windows.length ? getMax(windows, win => win.zIndex).zIndex + 1 : 1;
-  return [...windows, { ...win, zIndex }];
-}
-
-function focusWindow(windows, { id }) {
-  const zIndex = getMax(windows, w => w.zIndex).zIndex;
-  const oldZIndex = windows.find(w => w.id === id).zIndex;
-
-  return windows.map(w => {
-    if (w.zIndex < oldZIndex) {
-      return w;
-    } else if (w.id === id) {
-      return { ...w, zIndex };
-    } else {
-      return { ...w, zIndex: w.zIndex - 1 };
-    }
-  });
-}
-
 let socket;
-
+const reducer = deltaReducer(delta => socket.emit('delta', delta), mergeReducers(windowsReducer, messagesReducer));
 const initialState = {};
-
-const reducer = socketReducer(() => socket, (state, { type, payload }) => {
-  switch (type) {
-    case 'addMessage':
-      return { ...state, messages: [...(state.messages || []), payload] };
-    case 'position':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, position: payload.position } : win)) };
-    case 'size':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
-    case 'addWindow':
-      return { ...state, windows: addWindow(state.windows || [], payload) };
-    case 'closeWindow':
-      return { ...state, windows: state.windows.filter(win => win.id !== payload.id) };
-    case 'focusWindow':
-      return { ...state, windows: focusWindow(state.windows, payload) };
-  }
-
-  return state;
-});
 
 export default function Home() {
   const [author, setAuthor] = useStorage('username', 'Guest ' + uniqId());

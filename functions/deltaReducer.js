@@ -11,7 +11,7 @@ function objectHash(obj, index) {
   return obj.id || '$$index:' + index;
 }
 
-export default function socketReducer(socket, reducer) {
+export default function deltaReducer(emit, reducer) {
   return (state, action) => {
     if (action?.type === 'init') {
       return { ...state, ...action?.payload };
@@ -23,7 +23,7 @@ export default function socketReducer(socket, reducer) {
 
     const nextState = reducer(state, action);
     const delta = diffPatcher.diff(state, nextState);
-    socket().emit('delta', delta);
+    emit(delta);
     return nextState;
   };
 }

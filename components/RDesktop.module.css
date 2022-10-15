@@ -3,4 +3,5 @@
   inset: 0;
   font-size: 14px;
   background: #008282;
+  user-select: none;
 }

@@ -66,7 +66,7 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
 });
 
 export default function Home() {
-  const [author, setAuthor] = useState('Guest');
+  const [author, setAuthor] = useState('Guest ' + uniqId());
   const [message, setMessage] = useState('');
   const [state, dispatch] = useReducer(reducer, initialState);
   const messages = state.messages || [];
@@ -139,13 +139,14 @@ export default function Home() {
   const activeWindow = getMax(windows, win => win.zIndex);
   const openWindow = () => {
     const id = uniqId();
+    const [left, top] = activeWindow?.position || [0, 0];
 
     dispatch({
       type: 'addWindow',
       payload: {
         id,
         title: `Chat ${id}`,
-        position: [100, 100],
+        position: [left + 14, top + 14],
         size: [300, 300],
       },
     });
@@ -194,13 +195,14 @@ export default function Home() {
             ))}
           </ul>
           <input
-            size="4"
+            size="8"
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
           />
           :
           <input
+            size="16"
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}

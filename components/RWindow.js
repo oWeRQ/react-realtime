@@ -3,7 +3,7 @@ import clsx from '../functions/clsx';
 import listenPointerMove from '../functions/listenPointerMove';
 import styles from './RWindow.module.css';
 
-export default function RWindow({ onClose, onFocus, zIndex, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
+export default function RWindow({ onClose, onFocus, zIndex, active, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
   const [isMove, setIsMove] = useState(false);
   const headerRef = useRef();
   const offsetRef = useRef([0, 0]);
@@ -11,15 +11,15 @@ export default function RWindow({ onClose, onFocus, zIndex, title, position: [le
 
   const onMove = useCallback((e) => {
     const [offsetLeft, offsetTop] = offsetRef.current;
+    setIsMove(true);
     setPosition([e.clientX - offsetLeft, e.clientY - offsetTop]);
   }, [setPosition]);
 
   const onStartMove = useCallback((e) => {
     e.preventDefault();
-    setIsMove(true);
     offsetRef.current = [e.clientX - left, e.clientY - top];
     listenPointerMove(document, onMove, () => setIsMove(false));
-  }, [setIsMove, onMove, left, top]);
+  }, [onMove, left, top]);
 
   const onResize = useCallback((e) => {
     const [width, height] = sizeRef.current;
@@ -32,8 +32,16 @@ export default function RWindow({ onClose, onFocus, zIndex, title, position: [le
     listenPointerMove(document, onResize);
   }, [onResize, width, height]);
 
+  const style = {
+    zIndex,
+    left: left + 'px',
+    top: top + 'px',
+    width: width + 'px',
+    height: height + 'px',
+  };
+
   return (
-    <div onMouseDown={onFocus} className={styles.container} style={{ zIndex, left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px' }}>
+    <div onMouseDown={onFocus} className={clsx({ [styles.container]: true, [styles.active]: active })} style={style}>
       <div className={clsx({ [styles.header]: true, [styles.move]: isMove })} ref={headerRef} onMouseDown={onStartMove}>
         <div className={styles.title}>{title}</div>
         <div className={styles.close} onClick={onClose}>&times;</div>

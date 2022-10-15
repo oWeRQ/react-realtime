@@ -27,6 +27,7 @@
 
 .container.bold {
   font-weight: bold;
+  letter-spacing: -0.012ex;
 }
 
 .container.active {

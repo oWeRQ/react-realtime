@@ -216,7 +216,7 @@ export default function Home() {
             key={win.id}
             onClick={() => focusWindow(win)}
             active={isActive(win)}
-            bold
+            bold={isActive(win)}
           >{win.title}</RButton>
         )}
       </RTaskBar>

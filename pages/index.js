@@ -7,14 +7,38 @@ import RButton from '../components/RButton';
 import RWindow from '../components/RWindow';
 import uniqId from '../functions/uniqId';
 
-function focusWindow(id, windows) {
-  return [...windows].sort((a, b) => {
-    if (a.id === id)
-      return 1;
-    else if (b.id === id)
-      return -1;
+function getMax(arr, mapper = v => v) {
+  let max = -Infinity;
+  let result = undefined;
 
-    return 0;
+  for (let item of arr) {
+    const value = mapper(item);
+    if (max < value) {
+      max = value;
+      result = item;
+    }
+  }
+
+  return result;
+}
+
+function addWindow(windows, win) {
+  const zIndex = windows.length ? getMax(windows, win => win.zIndex).zIndex + 1 : 1;
+  return [...windows, { ...win, zIndex }];
+}
+
+function focusWindow(windows, { id }) {
+  const zIndex = getMax(windows, w => w.zIndex).zIndex;
+  const oldZIndex = windows.find(w => w.id === id).zIndex;
+
+  return windows.map(w => {
+    if (w.zIndex < oldZIndex) {
+      return w;
+    } else if (w.id === id) {
+      return { ...w, zIndex };
+    } else {
+      return { ...w, zIndex: w.zIndex - 1 };
+    }
   });
 }
 
@@ -31,11 +55,11 @@ const reducer = socketReducer(() => socket, (state, { type, payload }) => {
     case 'size':
       return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
     case 'addWindow':
-      return { ...state, windows: [...(state.windows || []), payload] };
+      return { ...state, windows: addWindow(state.windows || [], payload) };
     case 'closeWindow':
       return { ...state, windows: state.windows.filter(win => win.id !== payload.id) };
     case 'focusWindow':
-      return state.windows.at(-1).id === payload.id ? state : { ...state, windows: focusWindow(payload.id, state.windows) };
+      return { ...state, windows: focusWindow(state.windows, payload) };
   }
 
   return state;
@@ -96,7 +120,7 @@ export default function Home() {
   };
 
   const position = state.position ?? [100, 100];
-  const setPosition = (id, position) => {
+  const setPosition = ({ id }, position) => {
     dispatch({
       type: 'position',
       payload: { id, position },
@@ -104,15 +128,15 @@ export default function Home() {
   };
 
   const size = state.size ?? [300, 300];
-  const setSize = (id, size) => {
+  const setSize = ({ id }, size) => {
     dispatch({
       type: 'size',
       payload: { id, size },
     });
   };
 
-  const [activeId, setActiveId] = useState(0);
   const windows = state.windows ?? [];
+  const activeWindow = getMax(windows, win => win.zIndex);
   const openWindow = () => {
     const id = uniqId();
 
@@ -126,7 +150,7 @@ export default function Home() {
       },
     });
   }
-  const closeWindow = (id) => {
+  const closeWindow = ({ id }) => {
     dispatch({
       type: 'closeWindow',
       payload: {
@@ -134,9 +158,7 @@ export default function Home() {
       },
     });
   }
-  const focusWindow = (id) => {
-    setActiveId(id);
-
+  const focusWindow = ({ id }) => {
     dispatch({
       type: 'focusWindow',
       payload: {
@@ -145,19 +167,24 @@ export default function Home() {
     });
   }
 
+  function isActive(win) {
+    return win.id === activeWindow?.id;
+  }
+
   return (
     <RDesktop>
       {windows.map(win =>
         <RWindow
           key={win.id}
-          onClose={() => closeWindow(win.id)}
-          onFocus={() => focusWindow(win.id)}
+          onClose={() => closeWindow(win)}
+          onFocus={() => focusWindow(win)}
           position={win.position}
-          setPosition={value => setPosition(win.id, value)}
+          setPosition={value => setPosition(win, value)}
           size={win.size}
-          setSize={value => setSize(win.id, value)}
+          setSize={value => setSize(win, value)}
           title={win.title}
-          active={win.id === activeId}
+          zIndex={win.zIndex}
+          active={isActive(win)}
         >
           <ul>
             {messages.map((msg, i) => (
@@ -187,8 +214,8 @@ export default function Home() {
         {windows.map(win =>
           <RButton
             key={win.id}
-            onClick={() => focusWindow(win.id)}
-            active={win.id === activeId}
+            onClick={() => focusWindow(win)}
+            active={isActive(win)}
             bold
           >{win.title}</RButton>
         )}

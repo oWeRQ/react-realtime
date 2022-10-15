@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import clsx from '../functions/clsx';
 import listenPointerMove from '../functions/listenPointerMove';
+import RButton from './RButton';
 import styles from './RWindow.module.css';
 
 export default function RWindow({ onClose, onFocus, zIndex, active, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
@@ -44,7 +45,7 @@ export default function RWindow({ onClose, onFocus, zIndex, active, title, posit
     <div onMouseDown={onFocus} className={clsx({ [styles.container]: true, [styles.active]: active })} style={style}>
       <div className={clsx({ [styles.header]: true, [styles.move]: isMove })} ref={headerRef} onMouseDown={onStartMove}>
         <div className={styles.title}>{title}</div>
-        <div className={styles.close} onClick={onClose}>&times;</div>
+        <RButton className={styles.close} onClick={onClose}>&times;</RButton>
       </div>
       <div className={styles.content}>
         {children}

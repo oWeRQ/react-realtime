@@ -30,10 +30,22 @@
   letter-spacing: -0.012ex;
 }
 
+.container:active,
 .container.active {
   background: #e3e3e3;
   border-color: #000 #fff #fff #000;
 }
+.container:active::before,
 .container.active::before {
   border-color: #828282 #c3c3c3 #c3c3c3 #828282;
+}
+
+.container:focus {
+  outline: none;
+}
+.container:focus::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dotted #000;
 }

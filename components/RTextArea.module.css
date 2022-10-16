@@ -13,3 +13,7 @@
   border-color: #828282 #c3c3c3 #c3c3c3 #828282;
   resize: none;
 }
+
+.container.monospace {
+  font-family: monospace;
+}

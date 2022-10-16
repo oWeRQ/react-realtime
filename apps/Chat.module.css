@@ -32,13 +32,21 @@
 
 .footer {
   display: flex;
+  margin-top: 1px;
 }
 
 .authorInput {
+  margin-right: 1px;
   width: 100px;
   text-align: right;
 }
 
 .messageInput {
   flex: 1 1 0;
+  margin-right: 1px;
+}
+
+.statusBar {
+  padding: 2px;
+  height: 21px;
 }

@@ -10,6 +10,10 @@ function storageGet(key) {
 }
 
 function storageSet(key, value) {
+  if (typeof value === 'function') {
+    value = value();
+  }
+
   try {
     const jsonValue = JSON.stringify(value);
     localStorage.setItem(key, jsonValue);

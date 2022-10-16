@@ -1,9 +1,9 @@
 .container {
-  position: absolute;
+  position: sticky;
   z-index: 9000;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: calc(100% - 36px);
   padding: 4px 3px 3px;
   background: #c3c3c3;
 }

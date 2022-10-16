@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1 1 0;
+  overflow: auto;
+  padding-top: 8px;
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #828282 #c3c3c3 #c3c3c3 #828282;
+}
+
+.message {
+  display: flex;
+}
+
+.messageAuthor {
+  flex: 0 0 100px;
+  margin-right: 4px;
+  padding: 0 4px 8px;
+  text-align: right;
+  border-right: 1px solid #c3c3c3;
+}
+
+.messageText {
+  word-break: break-all;
+}
+
+.footer {
+  display: flex;
+}
+
+.authorInput {
+  width: 100px;
+  text-align: right;
+}
+
+.messageInput {
+  flex: 1 1 0;
+}

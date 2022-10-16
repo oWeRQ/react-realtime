@@ -1,0 +1,18 @@
+.container {
+  position: relative;
+  vertical-align: middle;
+  margin: 0;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  font: inherit;
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #828282 #c3c3c3 #c3c3c3 #828282;
+}
+
+.container:focus {
+  outline: none;
+}

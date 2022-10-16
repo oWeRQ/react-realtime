@@ -1,4 +1,6 @@
 .container {
+  overflow: auto;
+  isolation: isolate;
   position: absolute;
   inset: 0;
   font-size: 14px;

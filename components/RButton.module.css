@@ -46,6 +46,6 @@
 .container:focus::after {
   content: '';
   position: absolute;
-  inset: 4px;
+  inset: 3px;
   border: 1px dotted #000;
 }

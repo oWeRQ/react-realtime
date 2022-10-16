@@ -2,6 +2,7 @@ import mapBy from '../functions/mapBy';
 import Calculator from './Calculator';
 import Chat from './Chat';
 import Note from './Note';
+import Paint from './Paint';
 import ToDo from './ToDo';
 
 const apps = [
@@ -19,6 +20,11 @@ const apps = [
     id: 'Note',
     name: 'Note',
     component: Note,
+  },
+  {
+    id: 'Paint',
+    name: 'Paint',
+    component: Paint,
   },
   {
     id: 'ToDo',

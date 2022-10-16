@@ -13,9 +13,8 @@ export default function ToDo({ state, setState }) {
   };
 
   const todos = state.todos || [];
-  const undoneTodos = todos.filter(todo => !todo.done);
-  const doneTodos = todos.filter(todo => todo.done);
-  const status = `${undoneTodos.length} items left`;
+  const leftCount = todos.filter(todo => !todo.done).length;
+  const status = `${leftCount} items left`;
 
   const [text, setText] = useState('');
 
@@ -44,12 +43,6 @@ export default function ToDo({ state, setState }) {
     });
   };
 
-  const clear = () => {
-    dispatch({
-      type: 'clearTodos',
-    });
-  };
-
   const handleKeypress = e => {
     if (e.keyCode === 13) {
       add();
@@ -68,16 +61,8 @@ export default function ToDo({ state, setState }) {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.todoList}>
-          {undoneTodos.map(renderTodo)}
+          {todos.map(renderTodo)}
         </div>
-        {doneTodos.length > 0 && <>
-          <div className={styles.todoDivider}>
-            Done
-          </div>
-          <div className={styles.todoList}>
-            {doneTodos.map(renderTodo)}
-          </div>
-        </>}
       </div>
       <div className={styles.footer}>
         <RInput

@@ -22,6 +22,7 @@ export default function useStorage(key, value) {
 
   useEffect(() => {
     const listener = e => {
+      console.log('storage', e)
       if (e.key === key) {
         setState(storageGet(key));
       }
@@ -38,6 +39,10 @@ export default function useStorage(key, value) {
 
     window.dispatchEvent(new StorageEvent('storage', {
       key,
+      oldValue: storageGet(key),
+      newValue: value,
+      storageArea: localStorage,
+      url: window.location.href,
     }));
   }, [key]);
 

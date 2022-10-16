@@ -70,7 +70,7 @@ export default function Home() {
         id,
         appId: app.id,
         state: {},
-        title: `${app.name} [${id}]`,
+        title: app.name,
         position: [left + 14, top + 14],
         size: [300, 300],
       },

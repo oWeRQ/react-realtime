@@ -17,8 +17,11 @@ export default function SocketHandler(req, res) {
     socket.emit('init', data);
 
     socket.on('delta', (delta) => {
-      patch(data, delta);
-      socket.broadcast.emit('delta', delta);
+      if (delta) {
+        console.log('delta', JSON.stringify(delta));
+        patch(data, delta);
+        socket.broadcast.emit('delta', delta);
+      }
     });
   });
 

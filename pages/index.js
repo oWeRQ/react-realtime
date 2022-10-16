@@ -69,6 +69,7 @@ export default function Home() {
       payload: {
         id,
         appId: app.id,
+        data: {},
         title: `${app.name} [${id}]`,
         position: [left + 14, top + 14],
         size: [300, 300],
@@ -114,8 +115,18 @@ export default function Home() {
     setStart(val => !val);
   }
 
-  const appComponent = (win) => {
-    return createElement(appsById.get(win.appId).component, { state, dispatch });
+  const appComponent = ({ id, appId, data }) => {
+    const onData = (data) => {
+      dispatch({
+        type: 'data',
+        payload: {
+          id,
+          data,
+        },
+      });
+    };
+
+    return createElement(appsById.get(appId).component, { state, dispatch, data, onData });
   }
 
   return (

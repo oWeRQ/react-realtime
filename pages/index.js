@@ -1,9 +1,7 @@
 import io from 'socket.io-client';
 import { useState, useReducer, useEffect, useRef, createElement } from 'react';
-import mergeReducers from '../functions/mergeReducers';
 import deltaReducer from '../functions/deltaReducer';
 import windowsReducer from '../functions/windowsReducer';
-import messagesReducer from '../functions/messagesReducer';
 import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
@@ -15,31 +13,19 @@ import uniqId from '../functions/uniqId';
 import apps, { appsById } from '../apps';
 
 let socket;
-const reducer = deltaReducer(delta => socket.emit('delta', delta), mergeReducers(windowsReducer, messagesReducer));
-const initialState = {};
+const reducer = deltaReducer(delta => socket.emit('delta', delta), windowsReducer);
 
 export default function Home() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, {});
+  const action = type => payload => dispatch({ type, payload });
 
   useEffect(() => {
     async function socketInitializer() {
       await fetch('/api/socket');
 
       socket = io();
-
-      socket.on('init', (payload) => {
-        dispatch({
-          type: 'init',
-          payload,
-        });
-      });
-
-      socket.on('delta', (payload) => {
-        dispatch({
-          type: 'delta',
-          payload,
-        });
-      });
+      socket.on('init', action('init'));
+      socket.on('delta', action('delta'));
     };
 
     socketInitializer();
@@ -52,9 +38,13 @@ export default function Home() {
     };
   }, []);
 
-
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
+
+  const addWindow = action('addWindow');
+  const updateWindow = action('updateWindow');
+  const closeWindow = action('closeWindow');
+  const focusWindow = action('focusWindow');
 
   const isActive = (win) => {
     return win.id === activeWindow?.id;
@@ -64,50 +54,15 @@ export default function Home() {
     const id = uniqId();
     const [left, top] = activeWindow?.position || [0, 0];
 
-    dispatch({
-      type: 'addWindow',
-      payload: {
-        id,
-        appId: app.id,
-        state: {},
-        title: app.name,
-        position: [left + 14, top + 14],
-        size: [300, 300],
-      },
+    addWindow({
+      id,
+      appId: app.id,
+      state: {},
+      title: app.name,
+      position: [left + 14, top + 14],
+      size: [300, 300],
     });
   }
-
-  const closeWindow = ({ id }) => {
-    dispatch({
-      type: 'closeWindow',
-      payload: {
-        id,
-      },
-    });
-  }
-
-  const focusWindow = ({ id }) => {
-    dispatch({
-      type: 'focusWindow',
-      payload: {
-        id,
-      },
-    });
-  }
-
-  const setPosition = ({ id }, position) => {
-    dispatch({
-      type: 'position',
-      payload: { id, position },
-    });
-  };
-
-  const setSize = ({ id }, size) => {
-    dispatch({
-      type: 'size',
-      payload: { id, size },
-    });
-  };
 
   const startRef = useRef();
   const [start, setStart] = useState(false);
@@ -121,13 +76,7 @@ export default function Home() {
         nextState = nextState(state);
       }
 
-      dispatch({
-        type: 'state',
-        payload: {
-          id,
-          state: nextState,
-        },
-      });
+      updateWindow({ id, state: nextState });
     };
 
     return createElement(appsById.get(appId).component, { state, setState });
@@ -138,19 +87,19 @@ export default function Home() {
       {windows.map(win =>
         <RWindow
           key={win.id}
-          onClose={() => closeWindow(win)}
-          onFocus={() => focusWindow(win)}
+          onClose={() => closeWindow({ id: win.id })}
+          onFocus={() => focusWindow({ id: win.id })}
           position={win.position}
-          setPosition={value => setPosition(win, value)}
+          setPosition={position => updateWindow({ id: win.id, position })}
           size={win.size}
-          setSize={value => setSize(win, value)}
+          setSize={size => updateWindow({ id: win.id, size })}
           title={win.title}
           zIndex={win.zIndex}
           active={isActive(win)}
         >
           {appComponent(win)}
         </RWindow>
-       )}
+      )}
       <RTaskBar>
         {start && <RMenu reference={startRef} placement="top-start" onClose={() => setStart(false)}>
           {apps.map(app =>

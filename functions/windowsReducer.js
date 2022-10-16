@@ -26,14 +26,10 @@ function focusWindow(windows, { id }) {
 
 export default function windowsReducer(state, { type, payload }) {
   switch (type) {
-    case 'position':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, position: payload.position } : win)) };
-    case 'size':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
-    case 'state':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, state: payload.state } : win)) };
     case 'addWindow':
       return { ...state, windows: addWindow(state.windows || [], payload) };
+    case 'updateWindow':
+      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, ...payload } : win)) };
     case 'closeWindow':
       return { ...state, windows: state.windows.filter(win => win.id !== payload.id) };
     case 'focusWindow':

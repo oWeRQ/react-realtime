@@ -21,10 +21,6 @@
   border-color: #c3c3c3 #828282 #828282 #c3c3c3;
 }
 
-.container + .container {
-  margin-left: 4px;
-}
-
 .container.bold {
   font-weight: bold;
   letter-spacing: -0.012ex;

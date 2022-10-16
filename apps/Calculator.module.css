@@ -7,6 +7,7 @@
 
 .input {
   flex: 0;
+  text-align: right;
 }
 
 .keypad {

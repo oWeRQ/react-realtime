@@ -41,8 +41,8 @@ export default function RWindow({ onClose, onFocus, zIndex, active, title, posit
   };
 
   return (
-    <div onMouseDown={onFocus} className={clsx({ [styles.container]: true, [styles.active]: active })} style={style}>
-      <div className={clsx({ [styles.header]: true, [styles.move]: isMove })} ref={headerRef} onMouseDown={onStartMove}>
+    <div onMouseDown={onFocus} className={clsx(styles.container, { [styles.active]: active })} style={style}>
+      <div className={clsx(styles.header, { [styles.move]: isMove })} ref={headerRef} onMouseDown={onStartMove}>
         <div className={styles.title}>{title}</div>
         <RButton className={styles.close} onClick={onClose}>&times;</RButton>
       </div>

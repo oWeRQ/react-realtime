@@ -26,7 +26,6 @@ export default function useStorage(key, value) {
 
   useEffect(() => {
     const listener = e => {
-      console.log('storage', e)
       if (e.key === key) {
         setState(storageGet(key));
       }

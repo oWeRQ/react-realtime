@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { useState, useReducer, useEffect, useRef } from 'react';
+import { useState, useReducer, useEffect, useRef, createElement } from 'react';
 import mergeReducers from '../functions/mergeReducers';
 import deltaReducer from '../functions/deltaReducer';
 import windowsReducer from '../functions/windowsReducer';
@@ -10,19 +10,16 @@ import RButton from '../components/RButton';
 import RMenu from '../components/RMenu';
 import RMenuItem from '../components/RMenuItem';
 import RWindow from '../components/RWindow';
-import useStorage from '../functions/useStorage';
 import getMax from '../functions/getMax';
 import uniqId from '../functions/uniqId';
+import apps, { appsById } from '../apps';
 
 let socket;
 const reducer = deltaReducer(delta => socket.emit('delta', delta), mergeReducers(windowsReducer, messagesReducer));
 const initialState = {};
 
 export default function Home() {
-  const [author, setAuthor] = useStorage('username', 'Guest ' + uniqId());
-  const [message, setMessage] = useState('');
   const [state, dispatch] = useReducer(reducer, initialState);
-  const messages = state.messages || [];
 
   useEffect(() => {
     async function socketInitializer() {
@@ -55,22 +52,6 @@ export default function Home() {
     };
   }, []);
 
-  const sendMessage = async () => {
-    const payload = { author, message };
-    dispatch({
-      type: 'addMessage',
-      payload,
-    });
-    setMessage('');
-  };
-
-  const handleKeypress = (e) => {
-    if (e.keyCode === 13) {
-      if (message) {
-        sendMessage();
-      }
-    }
-  };
 
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
@@ -79,7 +60,7 @@ export default function Home() {
     return win.id === activeWindow?.id;
   }
 
-  const openWindow = () => {
+  const openWindow = (app) => {
     const id = uniqId();
     const [left, top] = activeWindow?.position || [0, 0];
 
@@ -87,7 +68,8 @@ export default function Home() {
       type: 'addWindow',
       payload: {
         id,
-        title: `Chat ${id}`,
+        appId: app.id,
+        title: `${app.name} [${id}]`,
         position: [left + 14, top + 14],
         size: [300, 300],
       },
@@ -131,9 +113,9 @@ export default function Home() {
   const toggleStart = () => {
     setStart(val => !val);
   }
-  const startClick = () => {
-    setStart(false);
-    openWindow();
+
+  const appComponent = (win) => {
+    return createElement(appsById.get(win.appId).component, { state, dispatch });
   }
 
   return (
@@ -151,33 +133,14 @@ export default function Home() {
           zIndex={win.zIndex}
           active={isActive(win)}
         >
-          <ul>
-            {messages.map((msg, i) => (
-              <li key={i}>
-                {msg.author}: {msg.message}
-              </li>
-            ))}
-          </ul>
-          <input
-            size="8"
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-          :
-          <input
-            size="16"
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyUp={handleKeypress}
-          />
-          <button onClick={sendMessage}>Send</button>
+          {appComponent(win)}
         </RWindow>
        )}
       <RTaskBar>
-        {start && <RMenu reference={startRef} placement="top-start">
-          <RMenuItem onClick={startClick}>Chat</RMenuItem>
+        {start && <RMenu reference={startRef} placement="top-start" onClose={() => setStart(false)}>
+          {apps.map(app =>
+            <RMenuItem key={app.id} onClick={() => openWindow(app)}>{app.name}</RMenuItem>
+          )}
         </RMenu>}
         <RButton ref={startRef} bold active={start} onClick={toggleStart}>Start</RButton>
         {windows.map(win =>

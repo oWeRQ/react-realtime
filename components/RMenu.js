@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import getReferencePlace from '../functions/getReferencePlace';
 import styles from './RMenu.module.css';
 
-export default function RMenu({ children, reference, placement }) {
+export default function RMenu({ children, reference, placement, onClose }) {
   const ref = useRef();
   const [style, setStyle] = useState();
 

@@ -21,7 +21,7 @@ export default function useStorage(key, value) {
   const [state, setState] = useState(storageGet(key) ?? storageSet(key, value));
 
   useEffect(() => {
-    const listener = (e) => {
+    const listener = e => {
       if (e.key === key) {
         setState(storageGet(key));
       }
@@ -34,8 +34,11 @@ export default function useStorage(key, value) {
   }, [key, setState]);
 
   const setter = useCallback(value => {
-    setState(value);
     storageSet(key, value);
+
+    window.dispatchEvent(new StorageEvent('storage', {
+      key,
+    }));
   }, [key]);
 
   return [state, setter];

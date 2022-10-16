@@ -24,7 +24,6 @@ export default function Chat({ state, dispatch }) {
     }
   };
 
-
   return (
     <div>
       <ul>

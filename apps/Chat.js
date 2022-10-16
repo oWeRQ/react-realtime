@@ -24,7 +24,7 @@ export default function Chat({ state, setState }) {
     contentRef.current.scrollTop = contentRef.current.scrollTopMax;
   }, [state.messages]);
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!message)
       return;
 
@@ -36,11 +36,9 @@ export default function Chat({ state, setState }) {
     setMessage('');
   };
 
-  const handleKeypress = (e) => {
+  const handleKeypress = e => {
     if (e.keyCode === 13) {
-      if (message) {
-        sendMessage();
-      }
+      sendMessage();
     }
   };
 

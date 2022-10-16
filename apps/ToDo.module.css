@@ -1,0 +1,64 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1 1 0;
+  overflow: auto;
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #828282 #c3c3c3 #c3c3c3 #828282;
+}
+
+.todoDivider {
+  padding: 8px 8px 4px;
+  font-weight: bold;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.todoText {
+  flex: 1 1 0;
+}
+
+.todo.done .todoText {
+  text-decoration: line-through;
+  color: #828282;
+}
+
+.todoRemove {
+  visibility: hidden;
+  padding: 0 4px;
+  margin-left: auto;
+  color: red;
+}
+
+.todo:hover .todoRemove {
+  visibility: visible;
+}
+
+.todoRemove:hover {
+  background: #c3c3c3;
+}
+
+.footer {
+  display: flex;
+  margin-top: 1px;
+}
+
+.textInput {
+  flex: 1 1 0;
+  margin-right: 1px;
+}
+
+.statusBar {
+  padding: 2px;
+  height: 21px;
+}

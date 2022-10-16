@@ -11,7 +11,7 @@ const authorColor = str2color(18, 80, 30);
 
 export default function Chat({ state, setState }) {
   const dispatch = action => {
-    setState(messagesReducer(state, action));
+    setState(state => messagesReducer(state, action));
   };
 
   const contentRef = useRef();

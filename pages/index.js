@@ -116,12 +116,16 @@ export default function Home() {
   }
 
   const appComponent = ({ id, appId, state }) => {
-    const setState = (state) => {
+    const setState = (nextState) => {
+      if (typeof nextState === 'function') {
+        nextState = nextState(state);
+      }
+
       dispatch({
         type: 'state',
         payload: {
           id,
-          state,
+          state: nextState,
         },
       });
     };

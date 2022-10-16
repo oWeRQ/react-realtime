@@ -4,22 +4,8 @@ import RInput from '../components/RInput';
 import RCheckbox from '../components/RCheckbox';
 import clsx from '../functions/clsx';
 import uniqId from '../functions/uniqId';
+import todosReducer from '../functions/todosReducer';
 import styles from './ToDo.module.css';
-
-function todosReducer(state, { type, payload }) {
-  switch (type) {
-    case 'createTodo':
-      return { ...state, todos: [ ...(state.todos || []), payload ] };
-    case 'updateTodo':
-      return { ...state, todos: state.todos.map(todo => todo.id === payload.id ? { ...todo, ...payload } : todo) };
-    case 'removeTodo':
-      return { ...state, todos: state.todos.filter(todo => todo.id !== payload.id) };
-    case 'clearTodos':
-      return { ...state, todos: state.todos.filter(todo => !todo.done) };
-  }
-
-  return state;
-}
 
 export default function ToDo({ state, setState }) {
   const dispatch = action => {

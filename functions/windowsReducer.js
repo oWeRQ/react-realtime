@@ -30,8 +30,8 @@ export default function windowsReducer(state, { type, payload }) {
       return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, position: payload.position } : win)) };
     case 'size':
       return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, size: payload.size } : win)) };
-    case 'data':
-      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, data: payload.data } : win)) };
+    case 'state':
+      return { ...state, windows: state.windows.map(win => (win.id === payload.id ? { ...win, state: payload.state } : win)) };
     case 'addWindow':
       return { ...state, windows: addWindow(state.windows || [], payload) };
     case 'closeWindow':

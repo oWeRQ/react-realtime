@@ -1,7 +1,7 @@
 import RTextArea from '../components/RTextArea';
 
-export default function Note({ data, onData }) {
+export default function Note({ state, setState }) {
   return (
-    <RTextArea value={data.value ?? ''} onChange={value => onData({ value })} monospace style={{ background: '#ffff60' }} />
+    <RTextArea value={state.value ?? ''} onChange={value => setState({ value })} monospace style={{ background: '#ffff60' }} />
   );
 }

@@ -9,9 +9,9 @@ import styles from './Chat.module.css';
 
 const authorColor = str2color(18, 80, 30);
 
-export default function Chat({ data: state, onData }) {
+export default function Chat({ state, setState }) {
   const dispatch = action => {
-    onData(messagesReducer(state, action));
+    setState(messagesReducer(state, action));
   };
 
   const contentRef = useRef();

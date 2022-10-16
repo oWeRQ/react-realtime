@@ -18,7 +18,7 @@ function calcReducer(state, { type, payload }) {
   return payload;
 }
 
-export default function Note({ data, onData }) {
+export default function Note({ state, setState }) {
   const [firstValue, setFirstValue] = useState();
   const [firstOp, setFirstOp] = useState();
   const [value, setValue] = useState('0');

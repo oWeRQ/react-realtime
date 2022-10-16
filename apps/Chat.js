@@ -4,11 +4,16 @@ import RInput from '../components/RInput';
 import str2color from '../functions/str2color';
 import uniqId from '../functions/uniqId';
 import useStorage from '../functions/useStorage';
+import messagesReducer from '../functions/messagesReducer';
 import styles from './Chat.module.css';
 
 const authorColor = str2color(18, 80, 30);
 
-export default function Chat({ state, dispatch }) {
+export default function Chat({ data: state, onData }) {
+  const dispatch = action => {
+    onData(messagesReducer(state, action));
+  };
+
   const contentRef = useRef();
   const [author, setAuthor] = useStorage('username', () => 'Guest ' + uniqId());
   const [message, setMessage] = useState('');

@@ -4,6 +4,7 @@
   position: absolute;
   inset: 0;
   font-size: 14px;
+  color: #000;
   background: #008282;
   user-select: none;
 }

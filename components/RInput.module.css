@@ -6,10 +6,12 @@
   box-sizing: border-box;
   width: 100%;
   font: inherit;
+  color: #000;
   background: #fff;
   border-width: 1px;
   border-style: solid;
   border-color: #828282 #c3c3c3 #c3c3c3 #828282;
+  border-radius: 0;
 }
 
 .container:focus {

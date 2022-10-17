@@ -46,10 +46,7 @@ export default function Home() {
 
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
-
-  const isActive = (win) => {
-    return win.id === activeWindow?.id;
-  }
+  const isActive = win => win.id === activeWindow?.id;
 
   const openApp = (app) => {
     const id = uniqId();

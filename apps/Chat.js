@@ -3,7 +3,7 @@ import RButton from '../components/RButton';
 import RInput from '../components/RInput';
 import str2color from '../functions/str2color';
 import uniqId from '../functions/uniqId';
-import useStorage from '../functions/useStorage';
+import useStorage from '../hooks/useStorage';
 import messagesReducer from '../reducers/messagesReducer';
 import styles from './Chat.module.css';
 

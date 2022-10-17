@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import getReferencePlace from './getReferencePlace';
+import getReferencePlace from '../functions/getReferencePlace';
 
 export default function useReferencePlace(referenceRef, elementRef, placement) {
   const [style, setStyle] = useState();

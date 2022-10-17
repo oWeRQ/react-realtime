@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import useClickOutside from '../functions/useClickOutside';
-import useReferencePlace from '../functions/useReferencePlace';
+import useClickOutside from '../hooks/useClickOutside';
+import useReferencePlace from '../hooks/useReferencePlace';
 import styles from './RMenu.module.css';
 
 export default function RMenu({ children, reference, placement, onClose }) {

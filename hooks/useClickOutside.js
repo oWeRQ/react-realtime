@@ -14,5 +14,5 @@ export default function useClickOutside(ref, onClick) {
     return () => {
       window.removeEventListener('click', listener);
     };
-  }, []);
+  }, [ref]);
 }

@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { useReducer, useEffect, useCallback } from 'react';
 import deltaReducer from '../functions/deltaReducer';
-import windowsReducer from '../functions/windowsReducer';
+import windowsReducer from '../reducers/windowsReducer';
 import RApp from '../components/RApp';
 import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';

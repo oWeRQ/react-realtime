@@ -1,4 +1,4 @@
-import getMax from './getMax';
+import getMax from '../functions/getMax';
 
 function getZIndex(windows) {
   return getMax(windows, win => win.zIndex)?.zIndex ?? 0;

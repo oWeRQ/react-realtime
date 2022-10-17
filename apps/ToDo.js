@@ -4,7 +4,7 @@ import RInput from '../components/RInput';
 import RCheckbox from '../components/RCheckbox';
 import clsx from '../functions/clsx';
 import uniqId from '../functions/uniqId';
-import todosReducer from '../functions/todosReducer';
+import todosReducer from '../reducers/todosReducer';
 import styles from './ToDo.module.css';
 
 export default function ToDo({ state, setState }) {

@@ -1,6 +1,6 @@
 import RButton from '../components/RButton';
 import RInput from '../components/RInput';
-import calculatorReducer from '../functions/calculatorReducer';
+import calculatorReducer from '../reducers/calculatorReducer';
 import styles from './Calculator.module.css';
 
 export default function Note({ state, setState }) {

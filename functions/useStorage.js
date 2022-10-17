@@ -22,7 +22,7 @@ function storageSet(key, value) {
 }
 
 export default function useStorage(key, value) {
-  const [state, setState] = useState(storageGet(key) ?? storageSet(key, value));
+  const [state, setState] = useState(() => storageGet(key) ?? storageSet(key, value));
 
   useEffect(() => {
     const listener = e => {

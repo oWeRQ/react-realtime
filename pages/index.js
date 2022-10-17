@@ -1,7 +1,8 @@
 import io from 'socket.io-client';
-import { useState, useReducer, useEffect, useRef, createElement } from 'react';
+import { useState, useReducer, useEffect, useRef, useCallback } from 'react';
 import deltaReducer from '../functions/deltaReducer';
 import windowsReducer from '../functions/windowsReducer';
+import RApp from '../components/RApp';
 import RDesktop from '../components/RDesktop';
 import RTaskBar from '../components/RTaskBar';
 import RButton from '../components/RButton';
@@ -10,22 +11,29 @@ import RMenuItem from '../components/RMenuItem';
 import RWindow from '../components/RWindow';
 import getMax from '../functions/getMax';
 import uniqId from '../functions/uniqId';
-import apps, { appsById } from '../apps';
+import apps from '../apps';
 
 let socket;
 const reducer = deltaReducer(delta => socket.emit('delta', delta), windowsReducer);
 
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, {});
-  const action = type => payload => dispatch({ type, payload });
+  const useAction = (type) => useCallback((payload) => dispatch({ type, payload }), [type]);
+
+  const init = useAction('init');
+  const delta = useAction('delta');
+  const addWindow = useAction('addWindow');
+  const updateWindow = useAction('updateWindow');
+  const closeWindow = useAction('closeWindow');
+  const focusWindow = useAction('focusWindow');
 
   useEffect(() => {
     async function socketInitializer() {
       await fetch('/api/socket');
 
       socket = io();
-      socket.on('init', action('init'));
-      socket.on('delta', action('delta'));
+      socket.on('init', init);
+      socket.on('delta', delta);
     };
 
     socketInitializer();
@@ -36,15 +44,10 @@ export default function Home() {
         socket.disconnect();
       }
     };
-  }, []);
+  }, [init, delta]);
 
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
-
-  const addWindow = action('addWindow');
-  const updateWindow = action('updateWindow');
-  const closeWindow = action('closeWindow');
-  const focusWindow = action('focusWindow');
 
   const isActive = (win) => {
     return win.id === activeWindow?.id;
@@ -70,18 +73,6 @@ export default function Home() {
     setStart(val => !val);
   }
 
-  const appComponent = ({ id, appId, state }) => {
-    const setState = (nextState) => {
-      if (typeof nextState === 'function') {
-        nextState = nextState(state);
-      }
-
-      updateWindow({ id, state: nextState });
-    };
-
-    return createElement(appsById.get(appId).component, { state, setState });
-  }
-
   return (
     <RDesktop>
       {windows.map(win =>
@@ -97,7 +88,7 @@ export default function Home() {
           zIndex={win.zIndex}
           active={isActive(win)}
         >
-          {appComponent(win)}
+          <RApp id={win.id} appId={win.appId} state={win.state} updateWindow={updateWindow} />
         </RWindow>
       )}
       <RTaskBar>

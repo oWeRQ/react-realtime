@@ -11,7 +11,7 @@ function objectHash(obj, index) {
   return obj.id || '$$index:' + index;
 }
 
-export default function deltaReducer(emit, reducer) {
+export default function deltaReducer(reducer, emit) {
   return (state, action) => {
     if (action?.type === 'init') {
       return { ...state, ...action?.payload };

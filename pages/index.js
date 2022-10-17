@@ -1,6 +1,5 @@
-import io from 'socket.io-client';
-import { useReducer, useEffect, useCallback } from 'react';
-import deltaReducer from '../functions/deltaReducer';
+import { useCallback } from 'react';
+import useSocketReducer from '../hooks/useSocketReducer';
 import windowsReducer from '../reducers/windowsReducer';
 import RApp from '../components/RApp';
 import RDesktop from '../components/RDesktop';
@@ -11,38 +10,14 @@ import RWindow from '../components/RWindow';
 import getMax from '../functions/getMax';
 import uniqId from '../functions/uniqId';
 
-let socket;
-const reducer = deltaReducer(delta => socket.emit('delta', delta), windowsReducer);
-
 export default function Home() {
-  const [state, dispatch] = useReducer(reducer, {});
+  const [state, dispatch] = useSocketReducer('/api/socket', windowsReducer);
   const useAction = (type) => useCallback((payload) => dispatch({ type, payload }), [type]);
 
-  const init = useAction('init');
-  const delta = useAction('delta');
   const addWindow = useAction('addWindow');
   const updateWindow = useAction('updateWindow');
   const closeWindow = useAction('closeWindow');
   const focusWindow = useAction('focusWindow');
-
-  useEffect(() => {
-    async function socketInitializer() {
-      await fetch('/api/socket');
-
-      socket = io();
-      socket.on('init', init);
-      socket.on('delta', delta);
-    };
-
-    socketInitializer();
-
-    return () => {
-      if (socket) {
-        socket.off();
-        socket.disconnect();
-      }
-    };
-  }, [init, delta]);
 
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);

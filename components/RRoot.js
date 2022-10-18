@@ -3,28 +3,30 @@ import useSocketReducer from '../hooks/useSocketReducer';
 import windowsReducer from '../reducers/windowsReducer';
 import getMax from '../functions/getMax';
 import uniqId from '../functions/uniqId';
-import RApp from './RApp';
 import RDesktop from './RDesktop';
 import RTaskBar from './RTaskBar';
-import RButton from './RButton';
 import RStart from './RStart';
-import RWindow from './RWindow';
+import RWindowList from './RWindowList';
+import RWindowStack from './RWindowStack';
 
 export default function RRoot() {
   const [state, dispatch] = useSocketReducer('/api/socket', windowsReducer);
 
   const windows = state.windows ?? [];
   const activeWindow = getMax(windows, win => win.zIndex);
-  const isActive = win => win.id === activeWindow?.id;
+  const isActive = id => id === activeWindow?.id;
 
   const updateWindow = useCallback(payload => {
     dispatch({ type: 'updateWindow', payload });
   }, [dispatch]);
 
-  const setPosition = win => position => dispatch({ type: 'updateWindow', payload: { id: win.id, position } });
-  const setSize = win => size => dispatch({ type: 'updateWindow', payload: { id: win.id, size } });
-  const onClose = win => () => dispatch({ type: 'closeWindow', payload: { id: win.id } });
-  const onFocus = win => () => dispatch({ type: 'focusWindow', payload: { id: win.id } });
+  const closeWindow = useCallback(id => () => {
+    dispatch({ type: 'closeWindow', payload: { id } });
+  }, [dispatch]);
+
+  const focusWindow = useCallback(id => () => {
+    dispatch({ type: 'focusWindow', payload: { id } });
+  }, [dispatch]);
 
   const openApp = app => {
     const id = uniqId();
@@ -45,37 +47,20 @@ export default function RRoot() {
 
   return (
     <RDesktop>
-      {windows.map(win =>
-        <RWindow
-          key={win.id}
-          title={win.title}
-          zIndex={win.zIndex}
-          position={win.position}
-          size={win.size}
-          active={isActive(win)}
-          onClose={onClose(win)}
-          onFocus={onFocus(win)}
-          setPosition={setPosition(win)}
-          setSize={setSize(win)}
-        >
-          <RApp
-            id={win.id}
-            appId={win.appId}
-            state={win.state}
-            updateWindow={updateWindow}
-          />
-        </RWindow>
-      )}
+      <RWindowStack
+        windows={windows}
+        isActive={isActive}
+        focusWindow={focusWindow}
+        closeWindow={closeWindow}
+        updateWindow={updateWindow}
+      />
       <RTaskBar>
         <RStart openApp={openApp} />
-        {windows.map(win =>
-          <RButton
-            key={win.id}
-            onClick={onFocus(win)}
-            active={isActive(win)}
-            bold={isActive(win)}
-          >{win.title}</RButton>
-        )}
+        <RWindowList
+          windows={windows}
+          isActive={isActive}
+          focusWindow={focusWindow}
+        />
       </RTaskBar>
     </RDesktop>
   );

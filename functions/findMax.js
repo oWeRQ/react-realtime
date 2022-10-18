@@ -1,4 +1,4 @@
-export default function getMax(arr, mapper = v => v) {
+export default function findMax(arr, mapper = v => v) {
   let max = -Infinity;
   let result = undefined;
 

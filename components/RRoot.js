@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import useSocketReducer from '../hooks/useSocketReducer';
 import windowsReducer from '../reducers/windowsReducer';
-import getMax from '../functions/getMax';
+import findMax from '../functions/findMax';
 import uniqId from '../functions/uniqId';
 import RDesktop from './RDesktop';
 import RTaskBar from './RTaskBar';
@@ -13,7 +13,7 @@ export default function RRoot() {
   const [state, dispatch] = useSocketReducer('/api/socket', windowsReducer);
 
   const windows = state.windows ?? [];
-  const activeWindow = getMax(windows, win => win.zIndex);
+  const activeWindow = findMax(windows, win => win.zIndex);
   const isActive = id => id === activeWindow?.id;
 
   const updateWindow = useCallback(payload => {

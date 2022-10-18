@@ -1,7 +1,7 @@
-import getMax from '../functions/getMax';
+import findMax from '../functions/findMax';
 
 function getZIndex(windows) {
-  return getMax(windows, win => win.zIndex)?.zIndex ?? 0;
+  return findMax(windows, win => win.zIndex)?.zIndex ?? 0;
 }
 
 function addWindow(windows, win) {

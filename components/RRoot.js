@@ -8,6 +8,7 @@ import RTaskBar from './RTaskBar';
 import RStart from './RStart';
 import RWindowList from './RWindowList';
 import RWindowStack from './RWindowStack';
+import styles from './RRoot.module.css';
 
 export default function RRoot() {
   const [state, dispatch] = useSocketReducer('/api/socket', windowsReducer);
@@ -46,15 +47,16 @@ export default function RRoot() {
   };
 
   return (
-    <RDesktop>
+    <RDesktop className={styles.desktop}>
       <RWindowStack
+        className={styles.windowStack}
         windows={windows}
         isActive={isActive}
         focusWindow={focusWindow}
         closeWindow={closeWindow}
         updateWindow={updateWindow}
       />
-      <RTaskBar>
+      <RTaskBar className={styles.taskBar}>
         <RStart openApp={openApp} />
         <RWindowList
           windows={windows}

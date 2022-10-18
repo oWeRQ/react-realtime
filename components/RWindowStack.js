@@ -1,12 +1,12 @@
 import RApp from './RApp';
 import RWindow from './RWindow';
 
-export default function RWindowList({ windows, isActive, focusWindow, closeWindow, updateWindow }) {
+export default function RWindowList({ className, windows, isActive, focusWindow, closeWindow, updateWindow }) {
   const setPosition = id => position => updateWindow({ id, position });
   const setSize = id => size => updateWindow({ id, size });
 
   return (
-    <div>
+    <div className={className}>
       {windows.map(win =>
         <RWindow
           key={win.id}

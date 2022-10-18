@@ -1,0 +1,17 @@
+.desktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.windowStack {
+  position: relative;
+  overflow: auto;
+  flex: 1 1 0;
+}
+
+.taskBar {
+  position: relative;
+  z-index: 9000;
+}

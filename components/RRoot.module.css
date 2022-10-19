@@ -14,4 +14,9 @@
 .taskBar {
   position: relative;
   z-index: 9000;
+  display: flex;
+}
+
+.taskBarTime {
+  margin-left: auto;
 }

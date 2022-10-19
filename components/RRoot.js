@@ -5,6 +5,7 @@ import findMax from '../functions/findMax';
 import uniqId from '../functions/uniqId';
 import RDesktop from './RDesktop';
 import RTaskBar from './RTaskBar';
+import RTaskBarTime from './RTaskBarTime';
 import RStart from './RStart';
 import RWindowList from './RWindowList';
 import RWindowStack from './RWindowStack';
@@ -63,6 +64,7 @@ export default function RRoot() {
           isActive={isActive}
           focusWindow={focusWindow}
         />
+        <RTaskBarTime className={styles.taskBarTime} />
       </RTaskBar>
     </RDesktop>
   );

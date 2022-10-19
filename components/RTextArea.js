@@ -1,24 +1,37 @@
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useCallback, useEffect } from 'react';
 import clsx from '../functions/clsx';
+import useForwardedRef from '../hooks/useForwardedRef';
 import styles from './RTextArea.module.css';
 
 export default forwardRef(function RTextArea({ children, onChange, onSelection, selection, className, monospace, ...rest }, ref) {
-  useEffect(() => {
-    ref.current.setSelectionRange(...selection);
-  }, [ref, selection]);
+  const inputRef = useForwardedRef(ref);
 
-  const selectionHandler = e => {
-    onSelection?.([e.target.selectionStart, e.target.selectionEnd, e.target.selectionDirection]);
+  const revertSelection = useCallback(() => {
+    if (selection) {
+      inputRef.current.setSelectionRange(...selection);
+    }
+  }, [inputRef, selection]);
+
+  useEffect(revertSelection, [revertSelection]);
+
+  const focusHandler = e => {
+    e.preventDefault();
+    revertSelection();
   };
 
-  const changeHandler = e => {
-    onChange(e.target.value);
+  const selectHandler = onSelection && (() => {
+    onSelection([inputRef.current.selectionStart, inputRef.current.selectionEnd, inputRef.current.selectionDirection]);
+  });
+
+  const changeHandler = () => {
+    onChange(inputRef.current.value);
   };
 
   return (
     <textarea
-      ref={ref}
-      onSelect={selectionHandler}
+      ref={inputRef}
+      onFocus={focusHandler}
+      onSelect={selectHandler}
       onChange={changeHandler}
       className={clsx(styles.container, { [styles.monospace]: monospace }, className)}
       {...rest}

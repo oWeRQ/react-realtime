@@ -1,9 +1,6 @@
-import { useRef } from 'react';
 import RTextArea from '../components/RTextArea';
 
 export default function Note({ state, setState }) {
-  const ref = useRef();
-
   const onChange = value => {
     setState(state => ({ ...state, value }));
   };
@@ -14,7 +11,6 @@ export default function Note({ state, setState }) {
 
   return (
     <RTextArea
-      ref={ref}
       value={state.value ?? ''}
       onChange={onChange}
       onSelection={onSelection}

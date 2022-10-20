@@ -1,0 +1,7 @@
+.container {
+  background: #ffff60;
+}
+
+.container:focus {
+  background: #ffffc0;
+}

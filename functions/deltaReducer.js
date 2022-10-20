@@ -8,7 +8,7 @@ const diffPatcher = createDiffPatcher({
 });
 
 function objectHash(obj, index) {
-  return obj.id || '$$index:' + index;
+  return obj?.id || '$$index:' + index;
 }
 
 export default function deltaReducer(reducer, emit) {

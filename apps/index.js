@@ -1,5 +1,6 @@
 import mapBy from '../functions/mapBy';
 import Calculator from './Calculator';
+import Cast from './Cast';
 import Chat from './Chat';
 import Note from './Note';
 import Paint from './Paint';
@@ -10,6 +11,11 @@ const apps = [
     id: 'Calculator',
     name: 'Calculator',
     component: Calculator,
+  },
+  {
+    id: 'Cast',
+    name: 'Cast',
+    component: Cast,
   },
   {
     id: 'Chat',

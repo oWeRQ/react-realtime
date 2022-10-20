@@ -1,10 +1,11 @@
-import { forwardRef, useCallback, useEffect } from 'react';
+import { forwardRef, useCallback, useEffect, useState } from 'react';
 import clsx from '../functions/clsx';
 import useForwardedRef from '../hooks/useForwardedRef';
 import styles from './RTextArea.module.css';
 
 export default forwardRef(function RTextArea({ children, onChange, onSelection, selection, className, monospace, ...rest }, ref) {
   const inputRef = useForwardedRef(ref);
+  const [focus, setFocus] = useState(false);
 
   const revertSelection = useCallback(() => {
     if (selection) {
@@ -14,25 +15,37 @@ export default forwardRef(function RTextArea({ children, onChange, onSelection, 
 
   useEffect(revertSelection, [revertSelection]);
 
-  const focusHandler = e => {
-    e.preventDefault();
-    revertSelection();
+  const handlerPointerDown = e => {
+    if (!focus) {
+      e.preventDefault();
+      inputRef.current?.focus();
+    }
   };
 
-  const selectHandler = onSelection && (() => {
+  const handlerFocus = () => {
+    setFocus(true);
+  };
+
+  const handlerBlur = () => {
+    setFocus(false);
+  };
+
+  const handlerSelect = onSelection && (() => {
     onSelection([inputRef.current.selectionStart, inputRef.current.selectionEnd, inputRef.current.selectionDirection]);
   });
 
-  const changeHandler = () => {
+  const handlerChange = () => {
     onChange(inputRef.current.value);
   };
 
   return (
     <textarea
       ref={inputRef}
-      onFocus={focusHandler}
-      onSelect={selectHandler}
-      onChange={changeHandler}
+      onPointerDown={handlerPointerDown}
+      onFocus={handlerFocus}
+      onBlur={handlerBlur}
+      onSelect={handlerSelect}
+      onChange={handlerChange}
       className={clsx(styles.container, { [styles.monospace]: monospace }, className)}
       {...rest}
     >{children}</textarea>

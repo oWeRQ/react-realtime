@@ -4,7 +4,10 @@ import RButton from '../components/RButton';
 const iceServers = [
   {
     urls: "stun:stun.stunprotocol.org",
-  }
+  },
+  {
+    urls: "stun:stun.l.google.com:19302",
+  },
 ];
 
 export default function Cast({ state, setState }) {
@@ -14,7 +17,6 @@ export default function Cast({ state, setState }) {
   const [rpc, setRpc] = useState();
   const [caster, setCaster] = useState(false);
   const [listener, setListener] = useState(false);
-  const muted = true;
 
   const ready = async () => {
     console.warn('ready', caster, listener);
@@ -28,12 +30,22 @@ export default function Cast({ state, setState }) {
       setState(state => ({ ...state, offer: rpc.localDescription }));
     };
 
+    rpc.onsignalingstatechange = e => {
+      console.warn('onsignalingstatechange', rpc.signalingState);
+    }
+
+    rpc.connectionstatechange = e => {
+      console.warn('connectionstatechange', e);
+    };
+
     rpc.onicecandidate = async e => {
-      console.warn('onicecandidate', e.candidate);
+      if (e.candidate) {
+        setState(state => ({ ...state, offerCandidates: [...(state.offerCandidates ?? []), e.candidate] }));
+      }
     };
 
     const localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: false,
       video: true,
     });
 
@@ -42,7 +54,7 @@ export default function Cast({ state, setState }) {
   };
 
   const answer = async () => {
-    console.warn('answer', caster, listener);
+    console.warn('answer', caster, listener, state.iceCandidates);
     const rpc = new RTCPeerConnection({ iceServers });
 
     rpc.ontrack = e => {
@@ -51,11 +63,17 @@ export default function Cast({ state, setState }) {
     };
 
     rpc.onsignalingstatechange = e => {
-      console.warn('onsignalingstatechange', e.signalingState);
+      console.warn('onsignalingstatechange', rpc.signalingState);
+    }
+
+    rpc.connectionstatechange = e => {
+      console.warn('connectionstatechange', e);
     };
 
     rpc.onicecandidate = async e => {
-      console.warn('onicecandidate', e.candidate);
+      if (e.candidate) {
+        setState(state => ({ ...state, answerCandidates: [...(state.answerCandidates ?? []), e.candidate] }));
+      }
     };
 
     const desc = new RTCSessionDescription(state.offer);
@@ -67,6 +85,27 @@ export default function Cast({ state, setState }) {
     setListener(true);
     setRpc(rpc);
   }
+
+  const receiveAnswer = async () => {
+    console.log('receiveAnswer', rpc.signalingState);
+    if (rpc.signalingState !== 'stable') {
+      const desc = new RTCSessionDescription(state.answer);
+      await rpc.setRemoteDescription(desc);
+    }
+  };
+
+  const receiveCandidates = async () => {
+    if (caster && state.answerCandidates && rpc.iceConnectionState !== 'connected') {
+      console.warn('answerCandidates', rpc.iceConnectionState, state.answerCandidates);
+      state.answerCandidates.forEach(candidate => rpc.addIceCandidate(new RTCIceCandidate(candidate)));
+    }
+
+    if (listener && state.offerCandidates && rpc.iceConnectionState !== 'connected') {
+      console.warn('offerCandidates', rpc.iceConnectionState, state.offerCandidates);
+      state.offerCandidates.forEach(candidate => rpc.addIceCandidate(new RTCIceCandidate(candidate)));
+    }
+    console.log('rpc', rpc);
+  };
 
   const stop = () => {
     const stream = videoRef.current.srcObject;
@@ -80,6 +119,12 @@ export default function Cast({ state, setState }) {
     if (!caster && !listener && state.offer) {
       answer();
     }
+
+    if (caster && state.answer) {
+      receiveAnswer();
+    }
+
+    receiveCandidates();
   }, [caster, listener, state]);
 
   return (

@@ -2,7 +2,7 @@ import RRoot from '../../components/RRoot';
 
 export default function SpaceCode({ code }) {
   return (
-    <RRoot socketUrl={'/api/socket?code=' + encodeURIComponent(code)} />
+    <RRoot socketUrl="/api/socket" code={code} />
   );
 }
 

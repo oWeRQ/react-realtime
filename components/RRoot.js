@@ -11,8 +11,8 @@ import RWindowList from './RWindowList';
 import RWindowStack from './RWindowStack';
 import styles from './RRoot.module.css';
 
-export default function RRoot({ socketUrl }) {
-  const [state, dispatch] = useSocketReducer(socketUrl, windowsReducer);
+export default function RRoot({ socketUrl, code }) {
+  const [state, dispatch] = useSocketReducer(socketUrl, code, windowsReducer);
 
   const windows = state.windows ?? [];
   const activeWindow = findMax(windows, win => win.zIndex);

@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { useState, useReducer, useEffect, useCallback, useMemo } from 'react';
 import deltaReducer from '../functions/deltaReducer';
 
-export default function useSocketReducer(url, reducer, initializerArg = {}) {
+export default function useSocketReducer(url, code, reducer, initializerArg = {}) {
   const [socket, setSocket] = useState();
   const socketReducer = useMemo(() => deltaReducer(reducer, delta => socket?.emit('delta', delta)), [reducer, socket]);
   const [state, dispatch] = useReducer(socketReducer, initializerArg);
@@ -16,6 +16,9 @@ export default function useSocketReducer(url, reducer, initializerArg = {}) {
       const socket = io();
       socket.on('init', init);
       socket.on('delta', delta);
+      socket.on('connect', () => {
+        socket.emit('code', code);
+      });
       setSocket(socket);
       return socket;
     };
@@ -27,7 +30,7 @@ export default function useSocketReducer(url, reducer, initializerArg = {}) {
       socket.off();
       socket.disconnect();
     };
-  }, [url, init, delta]);
+  }, [url, init, delta, code]);
 
   return [state, dispatch];
 }

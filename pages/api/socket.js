@@ -1,4 +1,4 @@
-import { clone, patch } from 'jsondiffpatch';
+import { patch } from 'jsondiffpatch';
 import { Server } from 'socket.io';
 
 export default function SocketHandler(req, res) {
@@ -14,13 +14,25 @@ export default function SocketHandler(req, res) {
   const data = {};
 
   io.on('connection', (socket) => {
-    socket.emit('init', data);
+    console.log('connection', socket.id);
+    let code;
+
+    socket.on('code', (_) => {
+      code = _; 
+      
+      if (typeof data[code] !== 'object') {
+        data[code] = {};
+      }
+      
+      socket.emit('init', data[code]);
+      socket.join(code);
+    });
 
     socket.on('delta', (delta) => {
       if (delta) {
         console.log('delta', JSON.stringify(delta));
-        patch(data, delta);
-        socket.broadcast.emit('delta', delta);
+        patch(data[code], delta);
+        socket.to(code).emit('delta', delta);
       }
     });
   });

@@ -1,0 +1,21 @@
+.toolbar {
+    padding: 4px;
+}
+
+.content {
+    display: flex;
+}
+
+.video {
+    flex: 0;
+    background: #000;
+}
+
+.state {
+    overflow: auto;
+    flex: 1;
+    padding: 4px;
+    white-space: pre-wrap;
+    background: #fff;
+    user-select: text;
+}

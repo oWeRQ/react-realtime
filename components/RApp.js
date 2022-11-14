@@ -13,5 +13,9 @@ export default memo(function RApp({ id, appId, state, updateWindow }) {
     updateWindow({ id, state: nextState });
   }, [id, updateWindow]);
 
-  return createElement(appsById.get(appId).component, { state, setState });
+  const resize = useCallback((width, height, resizable = true) => {
+    updateWindow({ id, size: [width, height], resizable });
+  }, [id, updateWindow]);
+
+  return createElement(appsById.get(appId).component, { state, setState, resize });
 });

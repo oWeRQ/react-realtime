@@ -19,6 +19,7 @@ export default function RWindowList({ className, windows, isActive, focusWindow,
           onFocus={focusWindow(win.id)}
           setPosition={setPosition(win.id)}
           setSize={setSize(win.id)}
+          resizable={win.resizable}
         >
           <RApp
             id={win.id}

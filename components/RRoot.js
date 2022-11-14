@@ -43,6 +43,7 @@ export default function RRoot({ socketUrl, code }) {
         title: app.name,
         position: [left + 14, top + 14],
         size: [300, 300],
+        resizable: true,
       },
     });
   };

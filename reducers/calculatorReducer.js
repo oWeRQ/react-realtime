@@ -43,7 +43,7 @@ export default function calculatorReducer(state, { type, payload }) {
     case 'op':
       return {
         ...state,
-        prev: String(opReducer(+state.prev, { type: state.op, payload: +state.value })),
+        prev: String(opReducer(+state.prev, { type: state.op, payload: +state.value || 0 })),
         op: payload,
         value: '0',
       };
@@ -52,14 +52,14 @@ export default function calculatorReducer(state, { type, payload }) {
         ...state,
         prev: '0',
         op: null,
-        value: String(Math.sqrt(+state.value)),
+        value: String(Math.sqrt(+state.value || 0)),
       };
     case 'calc':
       return {
         ...state,
         prev: '0',
         op: null,
-        value: String(opReducer(+state.prev, { type: state.op, payload: +state.value })),
+        value: String(opReducer(+state.prev, { type: state.op, payload: +state.value || 0 })),
       };
   }
 

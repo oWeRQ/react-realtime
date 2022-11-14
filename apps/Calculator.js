@@ -1,10 +1,15 @@
+import { useEffect } from 'react';
 import RButton from '../components/RButton';
 import RInput from '../components/RInput';
 import calculatorReducer from '../reducers/calculatorReducer';
 import styles from './Calculator.module.css';
 
-export default function Note({ state, setState }) {
+export default function Note({ state, setState, resize }) {
   const action = (type, payload) => () => setState(calculatorReducer(state, { type, payload }));
+
+  useEffect(() => {
+    resize(400, 300, false);
+  }, [resize]);
 
   return (
     <div className={styles.container}>
@@ -24,7 +29,7 @@ export default function Note({ state, setState }) {
         <RButton onClick={action('num', 2)}>2</RButton>
         <RButton onClick={action('num', 3)}>3</RButton>
         <RButton onClick={action('op', '-')}>-</RButton>
-        <RButton onClick={action('sqrt')}>sqrt</RButton>
+        <RButton onClick={action('sqrt')}>Sqrt</RButton>
         <RButton onClick={action('num', 0)}>0</RButton>
         <RButton onClick={action('sign')}>+/-</RButton>
         <RButton onClick={action('dot')}>.</RButton>

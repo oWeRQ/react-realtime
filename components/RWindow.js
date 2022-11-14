@@ -4,7 +4,7 @@ import listenPointerMove from '../functions/listenPointerMove';
 import RButton from './RButton';
 import styles from './RWindow.module.css';
 
-export default function RWindow({ onClose, onFocus, zIndex, active, title, position: [left, top], setPosition, size: [width, height], setSize, children }) {
+export default function RWindow({ onClose, onFocus, zIndex, active, title, position: [left, top], setPosition, size: [width, height], setSize, resizable, children }) {
   const [isMove, setIsMove] = useState(false);
   const headerRef = useRef();
   const offsetRef = useRef([0, 0]);
@@ -40,6 +40,9 @@ export default function RWindow({ onClose, onFocus, zIndex, active, title, posit
     zIndex,
     left: left + 'px',
     top: top + 'px',
+  };
+
+  const contentStyle = {
     width: width + 'px',
     height: height + 'px',
   };
@@ -50,10 +53,10 @@ export default function RWindow({ onClose, onFocus, zIndex, active, title, posit
         <div className={styles.title}>{title}</div>
         <RButton className={styles.close} onClick={onClose}>&times;</RButton>
       </div>
-      <div className={styles.content}>
+      <div className={styles.content} style={contentStyle}>
         {children}
       </div>
-      <div className={styles.resize} onMouseDown={onStartResize} onTouchStart={onStartResize}></div>
+      {resizable && <div className={styles.resize} onMouseDown={onStartResize} onTouchStart={onStartResize}></div>}
     </div>
   );
 }
